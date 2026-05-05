@@ -13,7 +13,9 @@ const TC_Engine = (() => {
     difficulty: 'intermediate',
     textType: 'words',
     punctuation: false,
-    strict: false
+    strict: false,
+    gameMode: 'classic',
+    specialText: null,
   };
 
   function init(cfg, callbacks) {
@@ -30,6 +32,7 @@ const TC_Engine = (() => {
     wpmInterval = null;
 
     const text = TC_TextGen.generate(config);
+    const gm = config.gameMode;
 
     state = {
       status: 'idle',
@@ -43,7 +46,14 @@ const TC_Engine = (() => {
       wpmHistory: [],
       liveWpm: 0,
       liveAccuracy: 100,
-      liveRawWpm: 0
+      liveRawWpm: 0,
+      // game mode state
+      health: gm === 'survival' ? 5 : null,
+      maxHealth: gm === 'survival' ? 5 : null,
+      combo: 0,
+      maxCombo: 0,
+      finishReason: 'completed',
+      progressiveStage: 1,
     };
 
     onUpdate({ type: 'reset', state, config });
@@ -95,6 +105,7 @@ const TC_Engine = (() => {
 
     const expected = state.text[state.currentIndex];
     const isCorrect = char === expected;
+    const gm = config.gameMode;
 
     state.typed[state.currentIndex] = {
       char,
@@ -107,6 +118,49 @@ const TC_Engine = (() => {
     }
 
     state.currentIndex++;
+
+    // --- Game mode rules ---
+
+    // Perfect Run: end on first mistake
+    if (!isCorrect && gm === 'perfect_run') {
+      state.finishReason = 'failed';
+      onUpdate({ type: 'char', index: state.currentIndex - 1, correct: isCorrect, state });
+      finish();
+      return;
+    }
+
+    // Survival: lose a life per mistake
+    if (!isCorrect && gm === 'survival') {
+      state.health = Math.max(0, state.health - 1);
+      onUpdate({ type: 'health', health: state.health, maxHealth: state.maxHealth, state });
+      if (state.health <= 0) {
+        state.finishReason = 'health-zero';
+        onUpdate({ type: 'char', index: state.currentIndex - 1, correct: isCorrect, state });
+        finish();
+        return;
+      }
+    }
+
+    // Combo: track consecutive correct chars
+    if (gm === 'combo') {
+      if (isCorrect) {
+        state.combo++;
+        if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+      } else {
+        state.combo = 0;
+      }
+      onUpdate({ type: 'combo', combo: state.combo, maxCombo: state.maxCombo, state });
+    }
+
+    // Progressive: track difficulty stage by position
+    if (gm === 'progressive') {
+      const stage = state.currentIndex < state.text.length / 3 ? 1
+                  : state.currentIndex < (state.text.length * 2) / 3 ? 2 : 3;
+      if (stage !== state.progressiveStage) {
+        state.progressiveStage = stage;
+        onUpdate({ type: 'progressive-stage', stage, state });
+      }
+    }
 
     onUpdate({ type: 'char', index: state.currentIndex - 1, correct: isCorrect, state });
 
@@ -137,7 +191,6 @@ const TC_Engine = (() => {
     state.status = 'finished';
     state.endTime = Date.now();
 
-    // Trim typed array to currentIndex for word mode
     if (config.mode === 'time') {
       state.typed = state.typed.slice(0, state.currentIndex);
     }

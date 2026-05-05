@@ -67,8 +67,86 @@ const TC_UI = (() => {
     document.getElementById('progress-bar').style.width = Math.min(100, value * 100) + '%';
   }
 
+  // -- Mode grid --
+  function renderModeGrid(selectedId) {
+    const el = document.getElementById('mode-grid');
+    if (!el) return;
+    el.innerHTML = TC_DATA.modes.map(m => {
+      const best = TC_Storage.getModeBest(m.id);
+      const bestStr = best ? _modeBestLabel(m.id, best) : '';
+      return `
+        <button class="mode-card ${selectedId === m.id ? 'selected' : ''}" data-mode-id="${m.id}">
+          <span class="mode-card-icon">${m.icon}</span>
+          <span class="mode-card-label">${m.label}</span>
+          <span class="mode-card-desc">${m.desc}</span>
+          ${bestStr ? `<span class="mode-card-best">${bestStr}</span>` : ''}
+        </button>`;
+    }).join('');
+  }
+
+  function _modeBestLabel(modeId, best) {
+    switch (modeId) {
+      case 'accuracy':    return `Best: ${best.accuracy}%`;
+      case 'combo':       return `Best combo: ${best.maxCombo || 0}`;
+      case 'perfect_run': return `Best: ${best.charsTyped || 0} chars`;
+      case 'survival':    return `Best: ${best.score || 0}s survived`;
+      case 'progressive': return `Best stage: ${best.stage || 1}`;
+      default:            return `Best: ${best.wpm} WPM`;
+    }
+  }
+
+  // -- Mode-specific test overlays --
+  function showModeOverlays(gameMode) {
+    const healthWrap = document.getElementById('health-wrap');
+    const comboWrap = document.getElementById('combo-wrap');
+    const stageBanner = document.getElementById('stage-banner');
+    if (healthWrap) healthWrap.classList.toggle('hidden', gameMode !== 'survival');
+    if (comboWrap)  comboWrap.classList.toggle('hidden',  gameMode !== 'combo');
+    if (stageBanner) stageBanner.classList.toggle('hidden', gameMode !== 'progressive');
+  }
+
+  function setModeBadge(mode) {
+    const el = document.getElementById('active-mode-badge');
+    if (!el) return;
+    el.textContent = mode ? mode.icon + ' ' + mode.label : '';
+    el.className = mode ? 'mode-badge' : 'mode-badge hidden';
+  }
+
+  function updateHealthDisplay(health, maxHealth) {
+    const el = document.getElementById('health-hearts');
+    if (!el) return;
+    const max = maxHealth || 5;
+    el.innerHTML = Array.from({ length: max }, (_, i) =>
+      `<span class="heart ${i < health ? 'alive' : 'dead'}">♥</span>`
+    ).join('');
+  }
+
+  function updateComboDisplay(combo, maxCombo) {
+    const valEl = document.getElementById('combo-value');
+    const bestEl = document.getElementById('combo-best-value');
+    if (valEl) valEl.textContent = combo;
+    if (bestEl) bestEl.textContent = maxCombo;
+    const wrap = document.getElementById('combo-wrap');
+    if (wrap) wrap.classList.toggle('combo-active', combo >= 10);
+  }
+
+  function updateStageBanner(stage) {
+    const el = document.getElementById('stage-banner');
+    if (!el) return;
+    const labels = { 1: 'Beginner', 2: 'Intermediate', 3: 'Advanced' };
+    el.textContent = 'Stage ' + stage + ' · ' + (labels[stage] || '');
+    el.className = 'stage-banner stage-' + stage;
+  }
+
   // -- Results screen --
   function renderResults(result, analysis, newAchievements, xpGained) {
+    // Title varies for failed runs
+    const titleEl = document.querySelector('#screen-results .results-title');
+    const failed = result.modeExtras && result.modeExtras.finishReason !== 'completed';
+    if (titleEl) {
+      titleEl.textContent = failed ? 'Run Ended' : 'Test Complete';
+    }
+
     document.getElementById('result-wpm').textContent = result.wpm;
     document.getElementById('result-accuracy').textContent = result.accuracy + '%';
     document.getElementById('result-errors').textContent = result.errors;
@@ -79,12 +157,66 @@ const TC_UI = (() => {
     xpEl.textContent = '+' + xpGained + ' XP';
     xpEl.className = 'xp-gain animated';
 
+    renderModeSpecificResults(result);
     renderAnalysis(analysis);
     renderNewAchievements(newAchievements);
 
     if (result.wpmHistory && result.wpmHistory.length > 1) {
       setTimeout(() => drawWpmChart(result.wpmHistory), 50);
     }
+  }
+
+  function renderModeSpecificResults(result) {
+    const el = document.getElementById('mode-specific-metrics');
+    if (!el) return;
+    const gm = result.gameMode || 'classic';
+    const x = result.modeExtras || {};
+    const mode = TC_DATA.modes.find(m => m.id === gm);
+    const modeName = mode ? mode.icon + ' ' + mode.label : gm;
+
+    let cards = `<div class="mode-result-badge">${modeName} Mode</div><div class="mode-result-cards">`;
+
+    if (gm === 'combo') {
+      cards += _modeResultCard('Max Combo', x.maxCombo || 0, 'streak');
+    }
+    if (gm === 'perfect_run') {
+      const reason = x.finishReason === 'failed' ? 'Failed' : 'Completed!';
+      cards += _modeResultCard('Result', reason, x.finishReason === 'failed' ? 'fail' : 'success');
+      cards += _modeResultCard('Chars Typed', x.charsTyped || 0, '');
+    }
+    if (gm === 'survival') {
+      const reason = x.finishReason === 'health-zero' ? 'Died' : 'Survived!';
+      cards += _modeResultCard('Outcome', reason, x.finishReason === 'health-zero' ? 'fail' : 'success');
+      cards += _modeResultCard('Lives Left', x.health || 0, '');
+    }
+    if (gm === 'progressive') {
+      cards += _modeResultCard('Stage Reached', x.progressiveStage || 1, 'stage');
+    }
+    if (gm === 'accuracy') {
+      const grade = result.accuracy >= 99 ? 'S' : result.accuracy >= 95 ? 'A' : result.accuracy >= 90 ? 'B' : result.accuracy >= 80 ? 'C' : 'D';
+      cards += _modeResultCard('Grade', grade, 'grade');
+    }
+    if (gm === 'endurance') {
+      const wpmArr = result.wpmHistory || [];
+      if (wpmArr.length >= 4) {
+        const firstHalf = wpmArr.slice(0, Math.floor(wpmArr.length / 2));
+        const secondHalf = wpmArr.slice(Math.floor(wpmArr.length / 2));
+        const avgFirst = Math.round(firstHalf.reduce((s, v) => s + v, 0) / firstHalf.length);
+        const avgSecond = Math.round(secondHalf.reduce((s, v) => s + v, 0) / secondHalf.length);
+        const dropOff = avgFirst - avgSecond;
+        cards += _modeResultCard('Speed Drop-off', (dropOff > 0 ? '-' : '+') + Math.abs(dropOff) + ' WPM', dropOff > 10 ? 'fail' : 'success');
+      }
+    }
+
+    cards += '</div>';
+    el.innerHTML = cards;
+  }
+
+  function _modeResultCard(label, value, variant) {
+    return `<div class="mode-result-card ${variant ? 'variant-' + variant : ''}">
+      <div class="mode-result-value">${value}</div>
+      <div class="mode-result-label">${label}</div>
+    </div>`;
   }
 
   function renderAnalysis(analysis) {
@@ -258,15 +390,19 @@ const TC_UI = (() => {
       tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No tests yet. Start typing!</td></tr>';
       return;
     }
-    tbody.innerHTML = tests.map(t => `
-      <tr>
-        <td>${formatDate(t.date)}</td>
-        <td class="wpm-cell">${t.wpm}</td>
-        <td>${t.accuracy}%</td>
-        <td>${t.errors}</td>
-        <td>${t.mode === 'time' ? t.duration_setting + 's' : t.duration_setting + 'w'}</td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = tests.map(t => {
+      const mode = TC_DATA.modes.find(m => m.id === (t.gameMode || 'classic'));
+      const modeLabel = mode ? mode.icon + ' ' + mode.label : (t.gameMode || 'Classic');
+      const duration = t.mode === 'time' ? t.duration_setting + 's' : t.duration_setting + 'w';
+      return `
+        <tr>
+          <td>${formatDate(t.date)}</td>
+          <td class="wpm-cell">${t.wpm}</td>
+          <td>${t.accuracy}%</td>
+          <td>${t.errors}</td>
+          <td class="mode-cell">${modeLabel} · ${duration}</td>
+        </tr>`;
+    }).join('');
   }
 
   function formatDate(iso) {
@@ -322,6 +458,8 @@ const TC_UI = (() => {
     showScreen, renderTextDisplay, updateCharAt, refreshDisplay,
     updateLiveMetrics, updateTimer, updateProgressBar,
     renderResults, renderProgressScreen, renderHomeStats, renderPracticeScreen,
-    drawWpmChart, bindToggleGroup, renderLevelBar
+    drawWpmChart, bindToggleGroup, renderLevelBar,
+    renderModeGrid, showModeOverlays, setModeBadge,
+    updateHealthDisplay, updateComboDisplay, updateStageBanner,
   };
 })();

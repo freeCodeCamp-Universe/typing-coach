@@ -10,7 +10,8 @@ const TC_Storage = (() => {
     level: 1,
     achievements: [],
     weakKeys: {},
-    goals: { dailyTests: 10, lastDate: null, todayCount: 0 }
+    goals: { dailyTests: 10, lastDate: null, todayCount: 0 },
+    modeBests: {}
   });
 
   function load() {
@@ -136,9 +137,48 @@ const TC_Storage = (() => {
     return Math.round(recent.reduce((s, t) => s + t.wpm, 0) / recent.length);
   }
 
+  function updateModeBest(modeId, result) {
+    const data = load();
+    if (!data.modeBests) data.modeBests = {};
+    const prev = data.modeBests[modeId];
+    const score = getModePrimaryScore(modeId, result);
+    const prevScore = prev ? getModePrimaryScore(modeId, prev) : -1;
+
+    if (score > prevScore) {
+      data.modeBests[modeId] = {
+        wpm: result.wpm,
+        accuracy: result.accuracy,
+        score,
+        maxCombo: result.modeExtras && result.modeExtras.maxCombo,
+        charsTyped: result.modeExtras && result.modeExtras.charsTyped,
+        stage: result.modeExtras && result.modeExtras.progressiveStage,
+      };
+      save(data);
+      return true;
+    }
+    return false;
+  }
+
+  function getModePrimaryScore(modeId, result) {
+    const x = result.modeExtras || {};
+    switch (modeId) {
+      case 'accuracy':    return result.accuracy || 0;
+      case 'combo':       return x.maxCombo || 0;
+      case 'perfect_run': return x.charsTyped || result.wpm || 0;
+      case 'survival':    return result.duration || 0;
+      case 'progressive': return x.stage || result.wpm || 0;
+      default:            return result.wpm || 0;
+    }
+  }
+
+  function getModeBest(modeId) {
+    const data = load();
+    return (data.modeBests && data.modeBests[modeId]) || null;
+  }
+
   function clearAll() {
     localStorage.removeItem(KEY);
   }
 
-  return { load, save, addTest, updateXP, unlockAchievement, getLevelFromXP, getRecentTests, getTodayTestCount, getWeakKeys, getAvgWPM, clearAll };
+  return { load, save, addTest, updateXP, unlockAchievement, getLevelFromXP, getRecentTests, getTodayTestCount, getWeakKeys, getAvgWPM, updateModeBest, getModeBest, clearAll };
 })();

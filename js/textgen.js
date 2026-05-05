@@ -85,7 +85,29 @@ const TC_TextGen = (() => {
     return words.join(' ');
   }
 
+  function generateProgressive(config) {
+    const total = config.mode === 'words'
+      ? config.wordCount
+      : estimateWordCount(config.duration, 'intermediate');
+    const third = Math.floor(total / 3);
+    const rest = total - third * 2;
+
+    const bWords = shuffle(TC_DATA.words.beginner).slice(0, third);
+    const iWords = shuffle(TC_DATA.words.intermediate).slice(0, third);
+    const aWords = shuffle(TC_DATA.words.advanced).slice(0, rest);
+
+    const iWithPunct = capitalizeFirst(addPunctuation(iWords));
+    const aWithPunct = capitalizeFirst(addPunctuation(aWords));
+
+    return [...bWords, ...iWithPunct, ...aWithPunct].join(' ');
+  }
+
   function generate(config) {
+    if (config.specialText === 'progressive') return generateProgressive(config);
+    if (config.specialText === 'weak-keys') {
+      const weakKeys = typeof TC_Storage !== 'undefined' ? TC_Storage.getWeakKeys(5) : [];
+      return generateFromWeakKeys(weakKeys);
+    }
     switch (config.textType) {
       case 'sentences': return generateSentences(config);
       case 'code': return generateCode(config);

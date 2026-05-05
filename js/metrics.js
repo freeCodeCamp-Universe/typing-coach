@@ -21,7 +21,7 @@ const TC_Metrics = (() => {
   }
 
   function buildResult(engineState, config) {
-    const { typed, text, startTime, endTime, keyErrors, correctedErrors } = engineState;
+    const { typed, startTime, endTime, keyErrors, correctedErrors } = engineState;
     const elapsed = (endTime - startTime) / 1000;
     const correctChars = typed.filter(t => t && t.correct).length;
     const totalTyped = typed.filter(t => t !== null).length;
@@ -40,8 +40,16 @@ const TC_Metrics = (() => {
       duration_setting: config.mode === 'time' ? config.duration : config.wordCount,
       difficulty: config.difficulty,
       textType: config.textType,
+      gameMode: config.gameMode || 'classic',
       keyErrors: { ...keyErrors },
-      wpmHistory: engineState.wpmHistory || []
+      wpmHistory: engineState.wpmHistory || [],
+      modeExtras: {
+        health: engineState.health,
+        maxCombo: engineState.maxCombo || 0,
+        charsTyped: engineState.currentIndex,
+        finishReason: engineState.finishReason || 'completed',
+        progressiveStage: engineState.progressiveStage || 1,
+      }
     };
   }
 
