@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-mark">⌨</span>
+          <span class="logo-text">Typing<strong>Coach</strong></span>
+        </div>
+        <nav class="main-nav">
+          <button class="nav-btn active" data-screen="home">Home</button>
+          <button class="nav-btn" data-screen="progress">Progress</button>
+          <button class="nav-btn" data-screen="practice">Practice</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+
+      <!-- ===== HOME ===== -->
+      <section id="screen-home" class="screen">
+        <div class="config-panel">
+          <div class="config-row">
+            <div class="config-group">
+              <label class="config-label">Mode</label>
+              <div class="toggle-group" id="mode-toggle">
+                <button class="toggle-btn active" data-value="time">Time</button>
+                <button class="toggle-btn" data-value="words">Words</button>
+              </div>
+            </div>
+
+            <div class="config-group" id="time-options">
+              <label class="config-label">Duration</label>
+              <div class="toggle-group">
+                <button class="toggle-btn" data-value="30">30s</button>
+                <button class="toggle-btn active" data-value="60">60s</button>
+                <button class="toggle-btn" data-value="120">120s</button>
+              </div>
+            </div>
+
+            <div class="config-group hidden" id="words-options">
+              <label class="config-label">Words</label>
+              <div class="toggle-group">
+                <button class="toggle-btn" data-value="25">25</button>
+                <button class="toggle-btn active" data-value="50">50</button>
+                <button class="toggle-btn" data-value="100">100</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-row">
+            <div class="config-group">
+              <label class="config-label">Difficulty</label>
+              <div class="toggle-group" id="difficulty-toggle">
+                <button class="toggle-btn" data-value="beginner">Beginner</button>
+                <button class="toggle-btn active" data-value="intermediate">Intermediate</button>
+                <button class="toggle-btn" data-value="advanced">Advanced</button>
+              </div>
+            </div>
+
+            <div class="config-group">
+              <label class="config-label">Text Type</label>
+              <div class="toggle-group" id="text-type-toggle">
+                <button class="toggle-btn active" data-value="words">Words</button>
+                <button class="toggle-btn" data-value="sentences">Sentences</button>
+                <button class="toggle-btn" data-value="code">Code</button>
+              </div>
+            </div>
+
+            <div class="config-group">
+              <label class="config-label">Options</label>
+              <div class="toggle-group">
+                <button class="toggle-btn" id="punctuation-toggle" data-value="false">Punctuation</button>
+                <button class="toggle-btn" id="strict-toggle" data-value="false">Strict</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="qs-best-wpm">0</div>
+            <div class="stat-label">Best WPM</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="qs-avg-acc">0%</div>
+            <div class="stat-label">Best Accuracy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="qs-tests">0</div>
+            <div class="stat-label">Tests Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="qs-streak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value level-badge" id="qs-level">1</div>
+            <div class="stat-label">Level</div>
+          </div>
+        </div>
+
+        <div class="start-area">
+          <p class="start-hint">Press <kbd>Enter</kbd> to start typing &nbsp;·&nbsp; <kbd>Esc</kbd> to stop &nbsp;·&nbsp; <kbd>Tab</kbd> to restart</p>
+        </div>
+      </section>
+
+      <!-- ===== TEST ===== -->
+      <section id="screen-test" class="screen hidden">
+        <div class="test-header">
+          <div class="live-metrics">
+            <div class="metric-item">
+              <span class="metric-value" id="live-wpm">0</span>
+              <span class="metric-label">wpm</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value" id="live-accuracy">100</span>
+              <span class="metric-label">acc %</span>
+            </div>
+          </div>
+
+          <div class="timer-section">
+            <div class="timer-display" id="timer-display">60</div>
+            <div class="progress-track">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+          </div>
+
+          <div class="test-controls">
+            <button class="icon-btn" id="restart-btn" title="Restart (Tab)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 .49-3.83"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="typing-area" id="typing-area" tabindex="0">
+          <div class="text-display" id="text-display"></div>
+        </div>
+
+        <div class="typing-footer">
+          <span class="typing-hint">Start typing · <kbd>Tab</kbd> restart · <kbd>Esc</kbd> exit</span>
+        </div>
+      </section>
+
+      <!-- ===== RESULTS ===== -->
+      <section id="screen-results" class="screen hidden">
+        <div class="results-top">
+          <h2 class="results-title">Test Complete</h2>
+          <div class="xp-gain" id="xp-gain-display"></div>
+        </div>
+
+        <div class="results-metrics">
+          <div class="result-metric primary">
+            <div class="result-value" id="result-wpm">0</div>
+            <div class="result-label">WPM</div>
+          </div>
+          <div class="result-metric">
+            <div class="result-value" id="result-accuracy">0%</div>
+            <div class="result-label">Accuracy</div>
+          </div>
+          <div class="result-metric">
+            <div class="result-value" id="result-raw-wpm">0</div>
+            <div class="result-label">Raw WPM</div>
+          </div>
+          <div class="result-metric">
+            <div class="result-value" id="result-errors">0</div>
+            <div class="result-label">Errors</div>
+          </div>
+          <div class="result-metric">
+            <div class="result-value" id="result-time">0s</div>
+            <div class="result-label">Time</div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <h4 class="chart-title">WPM Over Time</h4>
+          <div class="chart-wrap">
+            <canvas id="wpm-chart"></canvas>
+          </div>
+        </div>
+
+        <div id="results-analysis"></div>
+
+        <div id="new-achievements"></div>
+
+        <div class="results-actions">
+          <button class="btn btn-primary" id="retry-btn">Try Again <kbd>Tab</kbd></button>
+          <button class="btn btn-secondary" id="practice-weak-btn">Practice Weak Keys</button>
+          <button class="btn btn-ghost" id="home-btn">Home</button>
+        </div>
+      </section>
+
+      <!-- ===== PROGRESS ===== -->
+      <section id="screen-progress" class="screen hidden">
+        <h2 class="section-title">Your Progress</h2>
+
+        <div id="level-bar-wrap" class="level-bar-section"></div>
+
+        <div class="progress-bests">
+          <div class="stat-card large">
+            <div class="stat-value" id="prog-best-wpm">0</div>
+            <div class="stat-label">Best WPM</div>
+          </div>
+          <div class="stat-card large">
+            <div class="stat-value" id="prog-avg-wpm">0</div>
+            <div class="stat-label">Recent Avg WPM</div>
+          </div>
+          <div class="stat-card large">
+            <div class="stat-value" id="prog-best-acc">0%</div>
+            <div class="stat-label">Best Accuracy</div>
+          </div>
+          <div class="stat-card large">
+            <div class="stat-value" id="prog-total-tests">0</div>
+            <div class="stat-label">Total Tests</div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <h4 class="chart-title">WPM History</h4>
+          <div class="chart-wrap">
+            <canvas id="progress-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="achievements-section">
+          <h4 class="chart-title">Achievements</h4>
+          <div class="achievements-grid" id="achievements-grid"></div>
+        </div>
+
+        <div class="history-section">
+          <h4 class="chart-title">Recent Tests</h4>
+          <div class="table-wrap">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>WPM</th>
+                  <th>Accuracy</th>
+                  <th>Errors</th>
+                  <th>Mode</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PRACTICE ===== -->
+      <section id="screen-practice" class="screen hidden">
+        <h2 class="section-title">Practice Mode</h2>
+
+        <div class="config-panel">
+          <div class="config-row">
+            <div class="config-group">
+              <label class="config-label">Focus</label>
+              <div class="toggle-group" id="practice-focus-toggle">
+                <button class="toggle-btn active" data-value="weak-keys">Weak Keys</button>
+                <button class="toggle-btn" data-value="numbers">Numbers</button>
+                <button class="toggle-btn" data-value="symbols">Symbols</button>
+                <button class="toggle-btn" data-value="custom">Custom Text</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="weak-keys-display" class="weak-keys-section"></div>
+
+        <div id="custom-text-area" class="custom-text-section hidden">
+          <textarea id="custom-text-input" placeholder="Paste or type your custom practice text here..."></textarea>
+          <button class="btn btn-secondary" id="start-custom-btn">Practice This Text</button>
+        </div>
+
+        <button class="btn btn-primary btn-large" id="start-practice-btn">Start Practice</button>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/textgen.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/analysis.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
