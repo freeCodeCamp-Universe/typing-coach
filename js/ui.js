@@ -46,7 +46,23 @@ const TC_UI = (() => {
 
   function scrollCursorIntoView() {
     const cursor = document.querySelector('#text-display .cursor');
-    if (cursor) cursor.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (!cursor) return;
+
+    const container = document.getElementById('typing-area');
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const cursorRect = cursor.getBoundingClientRect();
+    const lineHeight = parseFloat(getComputedStyle(document.getElementById('text-display')).lineHeight) || 24;
+    const lookahead = lineHeight * 2;
+
+    if (cursorRect.top < containerRect.top) {
+      // Cursor scrolled above the visible area — bring it back into view
+      container.scrollTop += cursorRect.top - containerRect.top - lineHeight;
+    } else if (cursorRect.bottom > containerRect.bottom - lookahead) {
+      // Cursor is within 2 lines of the bottom — scroll to keep that gap
+      container.scrollTop += cursorRect.bottom - (containerRect.bottom - lookahead);
+    }
   }
 
   // -- Live metrics --
