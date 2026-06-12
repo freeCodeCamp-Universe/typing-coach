@@ -12,7 +12,9 @@ const TC_UI = (() => {
   function renderTextDisplay(text) {
     const el = document.getElementById('text-display');
     el.innerHTML = text.split('').map((ch, i) =>
-      `<span class="char" data-index="${i}">${ch === ' ' ? '&nbsp;' : ch === '\n' ? '<br>' : ch}</span>`
+      ch === '\n'
+        ? `<span class="char" data-index="${i}">&nbsp;</span><br>`
+        : `<span class="char" data-index="${i}">${ch === ' ' ? '&nbsp;' : ch}</span>`
     ).join('');
   }
 
