@@ -146,6 +146,8 @@
     document.getElementById('modal-mode-icon').textContent = mode.icon;
     document.getElementById('modal-mode-name').textContent = mode.label;
     document.getElementById('modal-mode-desc').textContent = mode.desc;
+    const textTypeGroup = document.querySelector('#text-type-toggle').closest('.config-group');
+    textTypeGroup.classList.toggle('hidden', modeId === 'code');
     document.getElementById('mode-modal-overlay').classList.remove('hidden');
     document.getElementById('modal-start-btn').focus();
     modalOpen = true;
