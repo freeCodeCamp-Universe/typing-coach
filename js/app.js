@@ -133,6 +133,7 @@
       TC_UI.renderHomeStats();
       TC_UI.renderModeGrid(cfg.gameMode);
     }
+    if (screen === 'test') updateTypingHint();
     if (screen === 'progress') TC_UI.renderProgressScreen();
     if (screen === 'practice') TC_UI.renderPracticeScreen();
     if (screen === 'test') document.getElementById('typing-area').focus();
@@ -276,6 +277,7 @@
 
     TC_UI.bindToggleGroup('text-type-toggle', val => {
       cfg.textType = val;
+      updateTypingHint();
       restartEngine();
     });
 
@@ -296,6 +298,14 @@
 
   function restartEngine() {
     setupEngine();
+  }
+
+  function updateTypingHint() {
+    const hint = document.querySelector('.typing-hint');
+    if (!hint) return;
+    hint.innerHTML = cfg.textType === 'code'
+      ? 'Start typing · <kbd>Esc</kbd> exit'
+      : 'Start typing · <kbd>Tab</kbd> restart · <kbd>Esc</kbd> exit';
   }
 
   // -- Test actions --
@@ -376,6 +386,7 @@
       }
       if (e.key === 'Tab' && currentScreen === 'test') {
         e.preventDefault();
+        if (cfg.textType === 'code') { TC_Engine.handleChar('\t'); return; }
         restartEngine();
         return;
       }

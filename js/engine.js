@@ -104,7 +104,9 @@ const TC_Engine = (() => {
     if (state.currentIndex >= state.text.length) return;
 
     const expected = state.text[state.currentIndex];
-    const isCorrect = char === expected;
+    const isIndentEquiv = config.textType === 'code' &&
+      ((char === '\t' && expected === ' ') || (char === ' ' && expected === '\t'));
+    const isCorrect = char === expected || isIndentEquiv;
     const gm = config.gameMode;
 
     state.typed[state.currentIndex] = {
