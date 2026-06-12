@@ -181,6 +181,7 @@
 
     document.getElementById('modal-start-btn').addEventListener('click', () => {
       closeModeModal();
+      restartEngine();
       navigateTo('test');
     });
   }
