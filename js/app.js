@@ -63,6 +63,14 @@
       return;
     }
 
+    if (type === 'text-extended') {
+      const container = document.getElementById('typing-area');
+      const savedScrollTop = container ? container.scrollTop : 0;
+      TC_UI.renderTextDisplay(state.text);
+      if (container) container.scrollTop = savedScrollTop;
+      TC_UI.refreshDisplay(state);
+    }
+
     if (type === 'char' || type === 'backspace') {
       TC_UI.refreshDisplay(state);
       TC_UI.updateLiveMetrics(state);

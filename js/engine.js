@@ -166,6 +166,27 @@ const TC_Engine = (() => {
 
     onUpdate({ type: 'char', index: state.currentIndex - 1, correct: isCorrect, state });
 
+    if (config.gameMode === 'endurance' &&
+        state.text.length - state.currentIndex < 200) {
+      const elapsed = (Date.now() - state.startTime) / 1000;
+      const remainingSecs = Math.max(0, config.duration - elapsed);
+      const wpm = state.liveWpm > 0 ? state.liveWpm : 50;
+      const wordsNeeded = Math.ceil((wpm * remainingSecs) / 60) + 10;
+      const safeTextType = (config.textType === 'numbers' || config.textType === 'symbols')
+        ? 'words' : config.textType;
+      const extraConfig = Object.assign({}, config, {
+        mode: 'words',
+        wordCount: wordsNeeded,
+        textType: safeTextType,
+        specialText: null,
+      });
+      const extraText = TC_TextGen.generate(extraConfig);
+      const suffix = ' ' + extraText;
+      state.text += suffix;
+      state.typed = state.typed.concat(new Array(suffix.length).fill(null));
+      onUpdate({ type: 'text-extended', state });
+    }
+
     if (state.currentIndex >= state.text.length) {
       finish();
     }
