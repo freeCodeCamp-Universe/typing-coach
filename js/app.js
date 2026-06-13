@@ -15,6 +15,7 @@
   let lastResult = null;
   let practiceConfig = null;
   let modalOpen = false;
+  let prevModeOverrides = {};
 
   // -- Init --
   function init() {
@@ -193,6 +194,15 @@
     const mode = TC_DATA.modes.find(m => m.id === modeId);
     if (!mode) return;
 
+    // Reset properties forced by the previous mode that the new mode doesn't override
+    const cfgDefaults = { mode: 'time', duration: 60, strict: false, textType: 'words' };
+    for (const key of Object.keys(prevModeOverrides)) {
+      if (!(key in mode.configOverrides) && key in cfgDefaults) {
+        cfg[key] = cfgDefaults[key];
+      }
+    }
+    prevModeOverrides = mode.configOverrides;
+
     // Apply configOverrides to cfg
     Object.assign(cfg, mode.configOverrides);
 
@@ -217,6 +227,11 @@
       document.querySelectorAll('#text-type-toggle .toggle-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.value === mode.configOverrides.textType);
         b.disabled = mode.lockedOptions.includes('textType') && b.dataset.value !== mode.configOverrides.textType;
+      });
+    } else {
+      // Sync text-type toggle to cfg.textType (handles reset after leaving code mode)
+      document.querySelectorAll('#text-type-toggle .toggle-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.value === cfg.textType);
       });
     }
 
