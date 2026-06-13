@@ -148,7 +148,7 @@ const TC_DATA = {
     {
       id: 'classic',
       label: 'Classic',
-      icon: '⌨️',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M6 11h.01M18 11h.01M7 15h10"/></svg>',
       desc: 'Type freely with backspace. Pure speed test.',
       configOverrides: {},
       lockedOptions: [],
@@ -156,7 +156,7 @@ const TC_DATA = {
     {
       id: 'accuracy',
       label: 'Accuracy',
-      icon: '🎯',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><line x1="22" y1="12" x2="17" y2="12"/><line x1="7" y1="12" x2="2" y2="12"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/></svg>',
       desc: 'Precision over speed. Accuracy is the primary score.',
       configOverrides: {},
       lockedOptions: [],
@@ -164,7 +164,7 @@ const TC_DATA = {
     {
       id: 'no_backspace',
       label: 'No Backspace',
-      icon: '🚫',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',
       desc: 'Backspace disabled. Commit to every keystroke.',
       configOverrides: { strict: true },
       lockedOptions: [],
@@ -172,7 +172,7 @@ const TC_DATA = {
     {
       id: 'perfect_run',
       label: 'Perfect Run',
-      icon: '💎',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
       desc: 'One mistake ends the run immediately.',
       configOverrides: {},
       lockedOptions: [],
@@ -180,7 +180,7 @@ const TC_DATA = {
     {
       id: 'survival',
       label: 'Survival',
-      icon: '❤️',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
       desc: 'Start with 5 lives. Each mistake costs one.',
       configOverrides: {},
       lockedOptions: [],
@@ -188,7 +188,7 @@ const TC_DATA = {
     {
       id: 'burst',
       label: 'Burst',
-      icon: '⚡',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
       desc: 'Measure peak speed in 10 seconds.',
       configOverrides: { mode: 'time', duration: 10 },
       lockedOptions: ['mode', 'duration'],
@@ -196,7 +196,7 @@ const TC_DATA = {
     {
       id: 'endurance',
       label: 'Endurance',
-      icon: '🏃',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
       desc: 'Sustain typing speed over 3 minutes.',
       configOverrides: { mode: 'time', duration: 180 },
       lockedOptions: ['mode', 'duration'],
@@ -204,7 +204,7 @@ const TC_DATA = {
     {
       id: 'progressive',
       label: 'Progressive',
-      icon: '📈',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
       desc: 'Words get harder as you type further.',
       configOverrides: {},
       lockedOptions: ['difficulty', 'textType', 'punctuation'],
@@ -213,7 +213,7 @@ const TC_DATA = {
     {
       id: 'combo',
       label: 'Combo',
-      icon: '🔥',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
       desc: 'Build streaks of correct characters. Errors reset combo.',
       configOverrides: {},
       lockedOptions: [],
@@ -221,7 +221,7 @@ const TC_DATA = {
     {
       id: 'weak_keys',
       label: 'Weak Keys',
-      icon: '🔑',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
       desc: 'Practice your most-mistyped characters.',
       configOverrides: {},
       lockedOptions: ['difficulty', 'textType', 'punctuation'],
@@ -230,7 +230,7 @@ const TC_DATA = {
     {
       id: 'code',
       label: 'Code',
-      icon: '💻',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
       desc: 'Type real code snippets with symbols and indentation.',
       configOverrides: { textType: 'code' },
       lockedOptions: ['textType'],
