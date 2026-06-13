@@ -152,7 +152,7 @@
   function openModeModal(modeId) {
     const mode = TC_DATA.modes.find(m => m.id === modeId);
     if (!mode) return;
-    document.getElementById('modal-mode-icon').textContent = mode.icon;
+    document.getElementById('modal-mode-icon').innerHTML = mode.icon;
     document.getElementById('modal-mode-name').textContent = mode.label;
     document.getElementById('modal-mode-desc').textContent = mode.desc;
     const textTypeGroup = document.querySelector('#text-type-toggle').closest('.config-group');

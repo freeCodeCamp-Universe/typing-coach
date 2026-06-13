@@ -359,6 +359,7 @@ header {
   padding: 0.625rem 1rem; text-align: left; white-space: nowrap;
 }
 .history-table td { padding: 0.625rem 1rem; font-size: 0.875rem; border-top: 1px solid var(--border); }
+.history-table td svg { width: 13px; height: 13px; vertical-align: middle; margin-right: 4px; }
 .history-table tr:hover td { background: var(--bg-tertiary); }
 .wpm-cell { font-weight: 700; color: var(--accent); font-family: var(--font-mono); }
 .empty-row { text-align: center; color: var(--text-dim); padding: 1.5rem !important; }
@@ -555,7 +556,9 @@ header {
 .mode-result-badge {
   font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px;
   color: var(--accent); margin-bottom: 0.625rem;
+  display: flex; align-items: center; gap: 5px;
 }
+.mode-result-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
 .mode-result-cards { display: flex; gap: 0.625rem; flex-wrap: wrap; }
 .mode-result-card {
   flex: 1; min-width: 5.5rem;
