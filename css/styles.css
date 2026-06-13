@@ -498,7 +498,9 @@ header {
   background: var(--bg-tertiary); border: 1px solid var(--border);
   border-radius: 20px; padding: 3px 10px;
   color: var(--accent); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px;
 }
+.mode-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
 
 /* Locked config options */
 .toggle-btn.locked {

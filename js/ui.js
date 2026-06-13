@@ -133,7 +133,7 @@ const TC_UI = (() => {
   function setModeBadge(mode) {
     const el = document.getElementById('active-mode-badge');
     if (!el) return;
-    el.textContent = mode ? mode.icon + ' ' + mode.label : '';
+    el.innerHTML = mode ? `${mode.icon}<span>${mode.label}</span>` : '';
     el.className = mode ? 'mode-badge' : 'mode-badge hidden';
   }
 
