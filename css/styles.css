@@ -418,7 +418,8 @@ header {
   border-bottom: 1px solid var(--border);
 }
 .modal-mode-title { display: flex; align-items: center; gap: 0.875rem; }
-.modal-mode-icon { font-size: 2rem; line-height: 1; }
+.modal-mode-icon { display: flex; align-items: center; color: var(--accent); }
+.modal-mode-icon svg { width: 32px; height: 32px; }
 .modal-mode-name { font-size: 1.25rem; font-weight: 700; color: var(--text); }
 .modal-mode-desc { font-size: 0.8125rem; color: var(--text-dim); margin-top: 3px; }
 
@@ -470,7 +471,14 @@ header {
   background: color-mix(in srgb, var(--bg-secondary) 70%, var(--accent) 30%);
   box-shadow: 0 0 0 1px var(--accent);
 }
-.mode-card-icon { font-size: 1.125rem; line-height: 1; margin-bottom: 2px; }
+.mode-card-icon {
+  display: flex; align-items: center; justify-content: flex-start;
+  margin-bottom: 6px; color: var(--text-dim);
+  transition: color var(--transition);
+}
+.mode-card-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
+.mode-card:hover .mode-card-icon { color: var(--accent); }
+.mode-card.selected .mode-card-icon { color: var(--accent); }
 .mode-card-label { font-size: 0.875rem; font-weight: 600; color: var(--text); }
 .mode-card-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.4; }
 .mode-card-best {
@@ -490,7 +498,9 @@ header {
   background: var(--bg-tertiary); border: 1px solid var(--border);
   border-radius: 20px; padding: 3px 10px;
   color: var(--accent); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px;
 }
+.mode-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
 
 /* Locked config options */
 .toggle-btn.locked {
@@ -592,7 +602,7 @@ header {
 
   .modal-body { padding: 1rem 1rem 1.25rem; gap: 1rem; }
   .modal-header { padding: 1rem 1rem 0.75rem; }
-  .modal-mode-icon { font-size: 1.625rem; }
+  .modal-mode-icon svg { width: 26px; height: 26px; }
   .modal-mode-name { font-size: 1.0625rem; }
   .modal-actions { flex-direction: column; align-items: center; gap: 0.625rem; }
   .modal-actions .btn-large { width: 100%; justify-content: center; }
