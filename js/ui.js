@@ -6,6 +6,10 @@ const TC_UI = (() => {
     document.querySelectorAll('.nav-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.screen === id);
     });
+    if (id === 'test') {
+      const container = document.getElementById('typing-area');
+      if (container) container.scrollTop = 0;
+    }
   }
 
   // -- Text display --
@@ -16,6 +20,8 @@ const TC_UI = (() => {
         ? `<span class="char" data-index="${i}">&nbsp;</span><br>`
         : `<span class="char" data-index="${i}">${ch === ' ' ? '&nbsp;' : ch}</span>`
     ).join('');
+    const container = document.getElementById('typing-area');
+    if (container) container.scrollTop = 0;
   }
 
   function updateCharAt(index, state) {
@@ -52,6 +58,7 @@ const TC_UI = (() => {
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
+    if (containerRect.height === 0) return;
     const cursorRect = cursor.getBoundingClientRect();
     const lineHeight = parseFloat(getComputedStyle(document.getElementById('text-display')).lineHeight) || 24;
     const lookahead = lineHeight * 2;
