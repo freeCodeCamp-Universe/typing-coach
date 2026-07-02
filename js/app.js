@@ -25,6 +25,7 @@
     bindTestActions();
     bindResultsActions();
     bindPracticeActions();
+    bindProgressActions();
     bindKeyboard();
     TC_UI.renderHomeStats();
     TC_UI.renderModeGrid(cfg.gameMode);
@@ -354,6 +355,30 @@
     document.getElementById('home-btn').addEventListener('click', () => navigateTo('home'));
   }
 
+  // -- Progress actions --
+  function bindProgressActions() {
+    const overlay = document.getElementById('reset-confirm-overlay');
+
+    document.getElementById('reset-progress-btn').addEventListener('click', () => {
+      overlay.classList.remove('hidden');
+      document.getElementById('reset-confirm-btn').focus();
+    });
+
+    document.getElementById('reset-cancel-btn').addEventListener('click', () => {
+      overlay.classList.add('hidden');
+    });
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.add('hidden');
+    });
+
+    document.getElementById('reset-confirm-btn').addEventListener('click', () => {
+      TC_Storage.clearAll();
+      overlay.classList.add('hidden');
+      navigateTo('home');
+    });
+  }
+
   // -- Practice actions --
   function bindPracticeActions() {
     TC_UI.bindToggleGroup('practice-focus-toggle', val => {
@@ -399,6 +424,8 @@
   function bindKeyboard() {
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
+        const resetOverlay = document.getElementById('reset-confirm-overlay');
+        if (!resetOverlay.classList.contains('hidden')) { resetOverlay.classList.add('hidden'); return; }
         if (modalOpen) { e.preventDefault(); closeModeModal(); return; }
         if (currentScreen === 'test') { restartEngine(); navigateTo('home'); }
         return;
