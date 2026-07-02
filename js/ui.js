@@ -291,22 +291,30 @@ const TC_UI = (() => {
     const canvas = document.getElementById('progress-chart');
     if (!canvas) return;
     const container = canvas.parentElement;
-    canvas.width = container.clientWidth || 800;
-    canvas.height = 160;
+    const logW = container.clientWidth || 800;
+    const logH = 160;
     const data = [...tests].reverse().map(t => t.wpm);
     if (data.length < 2) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = logW * dpr;
+      canvas.height = logH * dpr;
+      canvas.style.width = logW + 'px';
+      canvas.style.height = logH + 'px';
       const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
       const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#24283b';
-      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#565f89';
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#9aa5ce';
       ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, logW, logH);
       ctx.fillStyle = textColor;
       ctx.font = '14px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('Complete at least 2 tests to see your WPM history here', canvas.width / 2, canvas.height / 2);
+      ctx.fillText('Complete at least 2 tests to see your WPM history here', logW / 2, logH / 2);
       return;
     }
+    canvas.width = logW;
+    canvas.height = logH;
     drawLineChart(canvas, data, { color: '#9ece6a', label: 'WPM History' });
   }
 
