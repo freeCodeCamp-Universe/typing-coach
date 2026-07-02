@@ -294,6 +294,19 @@ const TC_UI = (() => {
     canvas.width = container.clientWidth || 800;
     canvas.height = 160;
     const data = [...tests].reverse().map(t => t.wpm);
+    if (data.length < 2) {
+      const ctx = canvas.getContext('2d');
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#24283b';
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#565f89';
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = textColor;
+      ctx.font = '14px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Complete at least 2 tests to see your WPM history here', canvas.width / 2, canvas.height / 2);
+      return;
+    }
     drawLineChart(canvas, data, { color: '#9ece6a', label: 'WPM History' });
   }
 
@@ -375,9 +388,7 @@ const TC_UI = (() => {
     document.getElementById('prog-best-acc').textContent = data.personalBest.accuracy + '%';
     document.getElementById('prog-total-tests').textContent = data.totalTests;
 
-    if (tests.length >= 2) {
-      setTimeout(() => drawProgressChart(tests.slice(0, 30)), 50);
-    }
+    setTimeout(() => drawProgressChart(tests.slice(0, 30)), 50);
 
     renderAchievementsGrid(data.achievements);
     renderHistoryTable(tests.slice(0, 20));
