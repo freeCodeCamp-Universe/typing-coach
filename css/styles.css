@@ -321,6 +321,8 @@ header {
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 .btn-ghost { background: none; color: var(--text-dim); border-color: transparent; }
 .btn-ghost:hover { color: var(--text); background: var(--bg-secondary); }
+.btn-danger { background: var(--error, #e06c75); color: #1a1b26; border-color: var(--error, #e06c75); }
+.btn-danger:hover { filter: brightness(1.1); }
 .btn-large { padding: 0.875rem 2rem; font-size: 1rem; }
 
 /* ===== Progress Screen ===== */
@@ -351,6 +353,17 @@ header {
 .ach-card .ach-desc { font-size: 0.6875rem; color: var(--text-dim); margin-top: 3px; }
 
 .history-section { margin-bottom: 1.75rem; }
+
+.danger-zone { margin-top: 0.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); margin-bottom: 2rem; }
+.danger-zone-content {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 1rem 1.25rem; margin-top: 0.75rem;
+  background: var(--bg-secondary); border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--error, #e06c75) 40%, transparent);
+}
+.danger-zone-content p { font-size: 0.875rem; color: var(--text-dim); margin: 0; }
+
+.confirm-modal { max-width: 420px; }
 .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); margin-top: 0.75rem; }
 .history-table { width: 100%; border-collapse: collapse; }
 .history-table th {

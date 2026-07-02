@@ -294,7 +294,35 @@
             </table>
           </div>
         </div>
+
+        <div class="danger-zone">
+          <h4 class="chart-title">Danger Zone</h4>
+          <div class="danger-zone-content">
+            <p>Permanently delete all test history, achievements, XP, and streaks. This cannot be undone.</p>
+            <button class="btn btn-danger" id="reset-progress-btn">Reset All Progress</button>
+          </div>
+        </div>
       </section>
+
+      <!-- ===== RESET CONFIRM MODAL ===== -->
+      <div id="reset-confirm-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+        <div class="modal confirm-modal">
+          <div class="modal-header">
+            <div class="modal-mode-title">
+              <div>
+                <div class="modal-mode-name">Reset All Progress?</div>
+                <div class="modal-mode-desc">This will permanently delete all your test history, achievements, XP, and streaks.</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="modal-actions">
+              <button class="btn btn-danger btn-large" id="reset-confirm-btn">Yes, Reset Everything</button>
+              <button class="btn btn-ghost" id="reset-cancel-btn">Cancel <kbd>Esc</kbd></button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ===== PRACTICE ===== -->
       <section id="screen-practice" class="screen hidden">
