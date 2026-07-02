@@ -58,29 +58,29 @@ const TC_Analysis = (() => {
     }
 
     if (consistencyScore < 60) {
-      msgs.push('Your speed fluctuates a lot — try to maintain a steady rhythm.');
+      msgs.push('Your speed fluctuates a lot. Try to maintain a steady rhythm.');
     } else if (consistencyScore >= 85) {
       msgs.push('Excellent consistency! Your speed stays steady throughout.');
     }
 
     if (trend === 'improving') {
-      msgs.push('You picked up speed as the test went on — good warm-up pattern.');
+      msgs.push('You picked up speed as the test went on. Good warm-up pattern.');
     } else if (trend === 'slowing') {
-      msgs.push('Your speed dropped toward the end — work on endurance.');
+      msgs.push('Your speed dropped toward the end. Work on endurance.');
     }
 
     if (accuracy < 85) {
-      msgs.push('Focus on accuracy over speed — slow down and type deliberately.');
+      msgs.push('Focus on accuracy over speed. Slow down and type deliberately.');
     } else if (accuracy >= 99) {
       msgs.push('Near-perfect accuracy! Try pushing your speed a bit more.');
     }
 
     if (correctedErrors > 5) {
-      msgs.push(`You corrected ${correctedErrors} errors — your self-correction instinct is good.`);
+      msgs.push(`You corrected ${correctedErrors} errors. Your self-correction instinct is good.`);
     }
 
     if (hesitationKeys.length > 0) {
-      msgs.push(`You struggle with punctuation like <kbd>${hesitationKeys[0].key}</kbd> — try punctuation practice mode.`);
+      msgs.push(`You struggle with punctuation like <kbd>${hesitationKeys[0].key}</kbd>. Try punctuation practice mode.`);
     }
 
     if (wpm > 80 && accuracy >= 95) {
