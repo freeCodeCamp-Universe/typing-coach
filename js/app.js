@@ -20,6 +20,16 @@
   let modeModalTriggerModeId = null;
   let resetModalTrigger = null;
 
+  const SCREEN_STORAGE_KEY = 'tc_current_screen';
+  const RESTORABLE_SCREENS = ['home', 'progress', 'practice'];
+
+  function getRestorableScreen() {
+    // 'test'/'results' hold in-progress engine state that isn't persisted,
+    // so a reload can't meaningfully resume them — fall back to home.
+    const saved = sessionStorage.getItem(SCREEN_STORAGE_KEY);
+    return RESTORABLE_SCREENS.includes(saved) ? saved : 'home';
+  }
+
   // -- Focus trapping (shared by all modals) --
   function getFocusableElements(container) {
     return Array.from(container.querySelectorAll(
@@ -56,8 +66,8 @@
     bindKeyboard();
     TC_UI.renderHomeStats();
     TC_UI.renderModeGrid(cfg.gameMode);
-    TC_UI.showScreen('home');
     setupEngine();
+    navigateTo(getRestorableScreen());
   }
 
   function setupEngine(overrides = {}) {
@@ -165,6 +175,7 @@
       restartEngine();
     }
     currentScreen = screen;
+    sessionStorage.setItem(SCREEN_STORAGE_KEY, screen);
     TC_UI.showScreen(screen);
     if (screen === 'home') {
       TC_UI.renderHomeStats();
