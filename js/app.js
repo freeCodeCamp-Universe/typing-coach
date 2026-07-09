@@ -329,9 +329,7 @@
   function updateTypingHint() {
     const hint = document.querySelector('.typing-hint');
     if (!hint) return;
-    hint.innerHTML = cfg.textType === 'code'
-      ? 'Start typing · <kbd>Esc</kbd> exit'
-      : 'Start typing · <kbd>Tab</kbd> restart · <kbd>Esc</kbd> exit';
+    hint.innerHTML = 'Start typing · <kbd>F2</kbd> restart · <kbd>Esc</kbd> exit';
   }
 
   // -- Test actions --
@@ -436,13 +434,18 @@
         navigateTo('test');
         return;
       }
-      if (e.key === 'Tab' && currentScreen === 'test') {
+      if (e.key === 'Tab' && currentScreen === 'test' && cfg.textType === 'code') {
         e.preventDefault();
-        if (cfg.textType === 'code') { TC_Engine.handleChar('\t'); return; }
-        restartEngine();
+        TC_Engine.handleChar('\t');
         return;
       }
-      if ((e.key === 'Enter' || e.key === 'Tab') && currentScreen === 'results') {
+      if (e.key === 'F2') {
+        e.preventDefault();
+        if (currentScreen === 'test') { restartEngine(); return; }
+        if (currentScreen === 'results') { restartEngine(); navigateTo('test'); return; }
+        return;
+      }
+      if (e.key === 'Enter' && currentScreen === 'results') {
         e.preventDefault();
         restartEngine();
         navigateTo('test');
