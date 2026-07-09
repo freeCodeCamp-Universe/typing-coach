@@ -16,6 +16,33 @@
   let practiceConfig = null;
   let modalOpen = false;
   let prevModeOverrides = {};
+  let modeModalTrigger = null;
+  let modeModalTriggerModeId = null;
+  let resetModalTrigger = null;
+
+  // -- Focus trapping (shared by all modals) --
+  function getFocusableElements(container) {
+    return Array.from(container.querySelectorAll(
+      'a[href], button, input, select, textarea, [tabindex]'
+    )).filter(el => !el.disabled && el.tabIndex !== -1 && el.offsetParent !== null);
+  }
+
+  function trapFocusKey(e, container) {
+    if (e.key !== 'Tab') return;
+    const focusable = getFocusableElements(container);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first || !container.contains(document.activeElement)) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else if (document.activeElement === last || !container.contains(document.activeElement)) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
 
   // -- Init --
   function init() {
@@ -150,22 +177,42 @@
   }
 
   // -- Modal --
-  function openModeModal(modeId) {
+  function openModeModal(modeId, triggerEl) {
     const mode = TC_DATA.modes.find(m => m.id === modeId);
     if (!mode) return;
+    modeModalTrigger = triggerEl || document.activeElement;
+    modeModalTriggerModeId = modeId;
     document.getElementById('modal-mode-icon').innerHTML = mode.icon;
     document.getElementById('modal-mode-name').textContent = mode.label;
     document.getElementById('modal-mode-desc').textContent = mode.desc;
     const textTypeGroup = document.querySelector('#text-type-toggle').closest('.config-group');
     textTypeGroup.classList.toggle('hidden', modeId === 'code');
     document.getElementById('mode-modal-overlay').classList.remove('hidden');
-    document.getElementById('modal-start-btn').focus();
+    const configPanel = document.querySelector('#mode-modal .config-panel');
+    const firstOption = getFocusableElements(configPanel)[0];
+    (firstOption || document.getElementById('modal-start-btn')).focus();
     modalOpen = true;
   }
 
   function closeModeModal() {
     document.getElementById('mode-modal-overlay').classList.add('hidden');
     modalOpen = false;
+    focusModeModalTrigger();
+    modeModalTrigger = null;
+    modeModalTriggerModeId = null;
+  }
+
+  function focusModeModalTrigger() {
+    if (modeModalTrigger && document.body.contains(modeModalTrigger)) {
+      modeModalTrigger.focus();
+      return;
+    }
+    // Selecting a new mode re-renders #mode-grid, detaching the original card
+    // element — fall back to the freshly rendered card for the same mode.
+    if (modeModalTriggerModeId) {
+      const liveCard = document.querySelector(`.mode-card[data-mode-id="${modeModalTriggerModeId}"]`);
+      if (liveCard) liveCard.focus();
+    }
   }
 
   // -- Mode selector --
@@ -183,7 +230,7 @@
         updateModeDescription(modeId);
         restartEngine();
       }
-      openModeModal(modeId);
+      openModeModal(modeId, card);
     });
 
     document.getElementById('modal-close-btn').addEventListener('click', closeModeModal);
@@ -354,25 +401,33 @@
   }
 
   // -- Progress actions --
+  function closeResetModal() {
+    const overlay = document.getElementById('reset-confirm-overlay');
+    overlay.classList.add('hidden');
+    if (resetModalTrigger && document.body.contains(resetModalTrigger)) {
+      resetModalTrigger.focus();
+    }
+    resetModalTrigger = null;
+  }
+
   function bindProgressActions() {
     const overlay = document.getElementById('reset-confirm-overlay');
 
-    document.getElementById('reset-progress-btn').addEventListener('click', () => {
+    document.getElementById('reset-progress-btn').addEventListener('click', e => {
+      resetModalTrigger = e.currentTarget;
       overlay.classList.remove('hidden');
-      document.getElementById('reset-confirm-btn').focus();
+      document.getElementById('reset-cancel-btn').focus();
     });
 
-    document.getElementById('reset-cancel-btn').addEventListener('click', () => {
-      overlay.classList.add('hidden');
-    });
+    document.getElementById('reset-cancel-btn').addEventListener('click', closeResetModal);
 
     overlay.addEventListener('click', e => {
-      if (e.target === overlay) overlay.classList.add('hidden');
+      if (e.target === overlay) closeResetModal();
     });
 
     document.getElementById('reset-confirm-btn').addEventListener('click', () => {
       TC_Storage.clearAll();
-      overlay.classList.add('hidden');
+      closeResetModal();
       navigateTo('home');
     });
   }
@@ -421,9 +476,17 @@
   // -- Global keyboard --
   function bindKeyboard() {
     document.addEventListener('keydown', e => {
+      const resetOverlay = document.getElementById('reset-confirm-overlay');
+      const resetOpen = !resetOverlay.classList.contains('hidden');
+
+      if (e.key === 'Tab' && resetOpen) { trapFocusKey(e, resetOverlay); return; }
+      if (e.key === 'Tab' && modalOpen) {
+        trapFocusKey(e, document.getElementById('mode-modal-overlay'));
+        return;
+      }
+
       if (e.key === 'Escape') {
-        const resetOverlay = document.getElementById('reset-confirm-overlay');
-        if (!resetOverlay.classList.contains('hidden')) { resetOverlay.classList.add('hidden'); return; }
+        if (resetOpen) { closeResetModal(); return; }
         if (modalOpen) { e.preventDefault(); closeModeModal(); return; }
         if (currentScreen === 'test') { restartEngine(); navigateTo('home'); }
         return;
