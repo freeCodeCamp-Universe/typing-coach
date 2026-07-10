@@ -298,7 +298,8 @@ header {
 }
 .ach-badge.new { animation: slideIn 0.4s ease; }
 @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-.ach-icon { font-size: 1.25rem; }
+.ach-icon { display: flex; align-items: center; color: var(--warning); }
+.ach-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
 .ach-label { font-size: 0.875rem; font-weight: 600; }
 
 .results-actions {
@@ -350,7 +351,9 @@ header {
 }
 .ach-card.unlocked { border-color: var(--warning); background: color-mix(in srgb, var(--bg-secondary) 80%, var(--warning) 20%); }
 .ach-card.locked { opacity: 0.45; filter: grayscale(0.5); }
-.ach-card .ach-icon { font-size: 1.5rem; margin-bottom: 6px; }
+.ach-card .ach-icon { justify-content: center; margin-bottom: 6px; color: var(--text-dim); }
+.ach-card .ach-icon svg { width: 22px; height: 22px; }
+.ach-card.unlocked .ach-icon { color: var(--warning); }
 .ach-card .ach-label { font-size: 0.75rem; font-weight: 600; color: var(--text); }
 .ach-card .ach-desc { font-size: 0.6875rem; color: var(--text-dim); margin-top: 3px; }
 
