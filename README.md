@@ -66,4 +66,4 @@ type-practice/
 
 ## License
 
-WaveForge is licensed under the BSD 3-Clause License. See `LICENSE`.
+Typing Coach is licensed under the BSD 3-Clause License. See `LICENSE`.
