@@ -63,3 +63,7 @@ type-practice/
     ├── storage.js    # localStorage persistence layer
     └── ui.js         # View rendering and DOM updates
 ```
+
+## License
+
+WaveForge is licensed under the BSD 3-Clause License. See `LICENSE`.
