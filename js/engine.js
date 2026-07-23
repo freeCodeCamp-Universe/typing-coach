@@ -47,6 +47,8 @@ const TC_Engine = (() => {
       liveWpm: 0,
       liveAccuracy: 100,
       liveRawWpm: 0,
+      pausedAt: null,
+      pausedFrom: null,
       // game mode state
       health: gm === 'survival' ? 5 : null,
       maxHealth: gm === 'survival' ? 5 : null,
@@ -59,11 +61,7 @@ const TC_Engine = (() => {
     onUpdate({ type: 'reset', state, config });
   }
 
-  function start() {
-    if (state.status !== 'idle') return;
-    state.status = 'typing';
-    state.startTime = Date.now();
-
+  function startTimers() {
     wpmInterval = setInterval(() => {
       const elapsed = (Date.now() - state.startTime) / 1000;
       const correctChars = state.typed.filter(t => t && t.correct).length;
@@ -71,6 +69,39 @@ const TC_Engine = (() => {
     }, 1000);
 
     rafId = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (state.status !== 'idle') return;
+    state.status = 'typing';
+    state.startTime = Date.now();
+    startTimers();
+  }
+
+  function pause() {
+    if (!state || (state.status !== 'typing' && state.status !== 'idle')) return;
+    state.pausedFrom = state.status;
+    state.status = 'paused';
+    state.pausedAt = Date.now();
+    cancelAnimationFrame(rafId);
+    clearInterval(wpmInterval);
+    onUpdate({ type: 'paused', state });
+  }
+
+  function resume() {
+    if (!state || state.status !== 'paused') return;
+    const wasTyping = state.pausedFrom === 'typing';
+    if (wasTyping) {
+      // Shift startTime forward by the paused span so every elapsed-time
+      // calculation downstream (tick, wpm sampling, endurance extension,
+      // final result duration) stays correct without needing its own fix-up.
+      state.startTime += Date.now() - state.pausedAt;
+    }
+    state.pausedAt = null;
+    state.status = state.pausedFrom;
+    state.pausedFrom = null;
+    if (wasTyping) startTimers();
+    onUpdate({ type: 'resumed', state });
   }
 
   function tick() {
@@ -99,7 +130,7 @@ const TC_Engine = (() => {
   }
 
   function handleChar(char) {
-    if (state.status === 'finished') return;
+    if (state.status === 'finished' || state.status === 'paused') return;
     if (state.status === 'idle') start();
     if (state.currentIndex >= state.text.length) return;
 
@@ -193,7 +224,7 @@ const TC_Engine = (() => {
   }
 
   function handleBackspace() {
-    if (state.status === 'finished') return;
+    if (state.status === 'finished' || state.status === 'paused') return;
     if (config.strict) return;
     if (state.currentIndex === 0) return;
 
@@ -226,6 +257,10 @@ const TC_Engine = (() => {
   function getConfig() { return config; }
   function isActive() { return state && state.status === 'typing'; }
   function isIdle() { return state && state.status === 'idle'; }
+  function isPaused() { return state && state.status === 'paused'; }
 
-  return { init, reset, handleChar, handleBackspace, getState, getConfig, isActive, isIdle, finish };
+  return {
+    init, reset, handleChar, handleBackspace, getState, getConfig,
+    isActive, isIdle, isPaused, pause, resume, finish,
+  };
 })();

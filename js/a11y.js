@@ -113,6 +113,14 @@ const TC_A11y = (() => {
     announce('More text added.', false);
   }
 
+  function onPause() {
+    announce('Test paused.', true);
+  }
+
+  function onResume() {
+    announce('Test resumed.', true);
+  }
+
   function onFinish(result) {
     const failed = result.modeExtras && result.modeExtras.finishReason && result.modeExtras.finishReason !== 'completed';
     const outcome = failed ? 'Run ended.' : 'Test complete.';
@@ -121,6 +129,6 @@ const TC_A11y = (() => {
 
   return {
     announce, resetState, announceReady, onChar, onTick,
-    onHealth, onCombo, onStage, onTextExtended, onFinish,
+    onHealth, onCombo, onStage, onTextExtended, onFinish, onPause, onResume,
   };
 })();
