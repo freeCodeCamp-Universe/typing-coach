@@ -11,6 +11,9 @@
 </head>
 <body>
   <div id="app">
+    <div id="sr-live-polite" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <div id="sr-live-assertive" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
     <header>
       <div class="header-inner">
         <div class="logo">
@@ -171,21 +174,23 @@
           <div class="health-hearts" id="health-hearts"></div>
         </div>
 
-        <div class="typing-area" id="typing-area" tabindex="0">
-          <div class="text-display" id="text-display"></div>
+        <div class="typing-area" id="typing-area">
+          <label class="sr-only" for="typing-input">Typing test input. Type the text shown below.</label>
+          <input type="text" id="typing-input" class="sr-only" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-describedby="typing-hint">
+          <div class="text-display" id="text-display" aria-hidden="true"></div>
         </div>
 
         <div class="stage-banner hidden" id="stage-banner"></div>
 
         <div class="combo-wrap hidden" id="combo-wrap">
-          <span class="combo-fire">🔥</span>
+          <span class="combo-fire" aria-hidden="true">🔥</span>
           <span class="combo-value" id="combo-value">0</span>
           <span class="combo-label">combo</span>
           <span class="combo-best">best: <span id="combo-best-value">0</span></span>
         </div>
 
         <div class="typing-footer">
-          <span class="typing-hint">Start typing · <kbd>F2</kbd> restart · <kbd>Esc</kbd> exit</span>
+          <span class="typing-hint" id="typing-hint">Start typing · <kbd>F2</kbd> restart · <kbd>Esc</kbd> exit</span>
         </div>
       </section>
 
@@ -362,6 +367,7 @@
   <script src="js/analysis.js"></script>
   <script src="js/gamification.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/a11y.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
