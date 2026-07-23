@@ -15,6 +15,7 @@
   let lastResult = null;
   let practiceConfig = null;
   let modalOpen = false;
+  let pauseOpen = false;
   let prevModeOverrides = {};
   let modeModalTrigger = null;
   let modeModalTriggerModeId = null;
@@ -64,6 +65,8 @@
     bindPracticeActions();
     bindProgressActions();
     bindKeyboard();
+    bindPauseActions();
+    bindAutoPause();
     TC_UI.renderHomeStats();
     TC_UI.renderModeGrid(cfg.gameMode);
     setupEngine();
@@ -99,6 +102,23 @@
       if (state.health !== null) TC_UI.updateHealthDisplay(state.health, state.maxHealth);
       TC_UI.updateComboDisplay(0, 0);
       TC_A11y.resetState(state, activeCfg);
+      pauseOpen = false;
+      TC_UI.hidePauseOverlay();
+      TC_UI.setPauseButtonState('idle');
+      return;
+    }
+
+    if (type === 'paused') {
+      TC_UI.showPauseOverlay();
+      TC_UI.setPauseButtonState('paused');
+      TC_A11y.onPause();
+      return;
+    }
+
+    if (type === 'resumed') {
+      TC_UI.hidePauseOverlay();
+      TC_UI.setPauseButtonState(state.status);
+      TC_A11y.onResume();
       return;
     }
 
@@ -118,6 +138,7 @@
       if (activeCfg.mode === 'words') {
         TC_UI.updateProgressBar(state.currentIndex / state.text.length);
       }
+      TC_UI.setPauseButtonState('typing');
       if (type === 'char') TC_A11y.onChar(state);
     }
 
@@ -153,6 +174,7 @@
   function handleTestFinish(result) {
     lastResult = result;
 
+    TC_UI.setPauseButtonState('idle');
     TC_A11y.onFinish(result);
     TC_Storage.addTest(result);
     TC_Storage.updateModeBest(result.gameMode, result);
@@ -179,7 +201,7 @@
 
   function navigateTo(screen) {
     if (modalOpen && screen !== 'home') closeModeModal();
-    if (currentScreen === 'test' && screen !== 'test' && TC_Engine.isActive()) {
+    if (currentScreen === 'test' && screen !== 'test' && (TC_Engine.isActive() || TC_Engine.isPaused())) {
       restartEngine();
     }
     currentScreen = screen;
@@ -398,7 +420,7 @@
   function updateTypingHint() {
     const hint = document.querySelector('.typing-hint');
     if (!hint) return;
-    hint.innerHTML = 'Start typing · <kbd>F2</kbd> restart · <kbd>Esc</kbd> exit';
+    hint.innerHTML = 'Start typing · <kbd>F2</kbd> restart · <kbd>Esc</kbd> pause';
   }
 
   // -- Test actions --
@@ -409,6 +431,45 @@
     });
     document.getElementById('typing-area').addEventListener('click', () => {
       document.getElementById('typing-input').focus();
+    });
+    document.getElementById('pause-btn').addEventListener('click', () => {
+      if (TC_Engine.isActive() || TC_Engine.isIdle()) pauseTest();
+      else if (TC_Engine.isPaused()) resumeTest();
+    });
+  }
+
+  // -- Pause --
+  function pauseTest() {
+    if (!TC_Engine.isActive() && !TC_Engine.isIdle()) return;
+    pauseOpen = true;
+    TC_Engine.pause();
+  }
+
+  function resumeTest() {
+    if (!TC_Engine.isPaused()) return;
+    TC_Engine.resume();
+    pauseOpen = false;
+    document.getElementById('typing-input').focus();
+  }
+
+  function bindPauseActions() {
+    document.getElementById('pause-resume-btn').addEventListener('click', resumeTest);
+    document.getElementById('pause-restart-btn').addEventListener('click', () => {
+      restartEngine();
+      navigateTo('test');
+    });
+    document.getElementById('pause-exit-btn').addEventListener('click', () => {
+      restartEngine();
+      navigateTo('home');
+    });
+  }
+
+  function bindAutoPause() {
+    window.addEventListener('blur', () => {
+      if (currentScreen === 'test' && TC_Engine.isActive()) pauseTest();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && currentScreen === 'test' && TC_Engine.isActive()) pauseTest();
     });
   }
 
@@ -506,11 +567,16 @@
         trapFocusKey(e, document.getElementById('mode-modal-overlay'));
         return;
       }
+      if (e.key === 'Tab' && pauseOpen) {
+        trapFocusKey(e, document.getElementById('pause-overlay'));
+        return;
+      }
 
       if (e.key === 'Escape') {
         if (resetOpen) { closeResetModal(); return; }
         if (modalOpen) { e.preventDefault(); closeModeModal(); return; }
-        if (currentScreen === 'test') { restartEngine(); navigateTo('home'); }
+        if (pauseOpen) { e.preventDefault(); resumeTest(); return; }
+        if (currentScreen === 'test') { e.preventDefault(); pauseTest(); return; }
         return;
       }
       if (e.key === 'Enter' && modalOpen) {
@@ -542,6 +608,7 @@
       }
 
       if (currentScreen !== 'test') return;
+      if (pauseOpen) return;
       if (e.ctrlKey || e.altKey || e.metaKey) return;
       e.preventDefault();
 

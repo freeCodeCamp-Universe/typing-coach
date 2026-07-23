@@ -155,6 +155,44 @@ const TC_UI = (() => {
     if (wrap) wrap.classList.toggle('combo-active', combo >= 10);
   }
 
+  function showPauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    const typingArea = document.getElementById('typing-area');
+    if (typingArea) typingArea.classList.add('paused');
+    if (!overlay) return;
+    overlay.classList.remove('hidden');
+    document.getElementById('pause-resume-btn').focus();
+  }
+
+  function hidePauseOverlay() {
+    const overlay = document.getElementById('pause-overlay');
+    const typingArea = document.getElementById('typing-area');
+    if (typingArea) typingArea.classList.remove('paused');
+    if (overlay) overlay.classList.add('hidden');
+  }
+
+  function setPauseButtonState(status) {
+    const btn = document.getElementById('pause-btn');
+    if (!btn) return;
+    const pauseIcon = btn.querySelector('.pause-icon');
+    const resumeIcon = btn.querySelector('.resume-icon');
+    if (status === 'typing' || status === 'idle') {
+      btn.classList.remove('hidden');
+      pauseIcon.classList.remove('hidden');
+      resumeIcon.classList.add('hidden');
+      btn.title = 'Pause (Esc)';
+      btn.setAttribute('aria-label', 'Pause');
+    } else if (status === 'paused') {
+      btn.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      resumeIcon.classList.remove('hidden');
+      btn.title = 'Resume (Esc)';
+      btn.setAttribute('aria-label', 'Resume');
+    } else {
+      btn.classList.add('hidden');
+    }
+  }
+
   function updateStageBanner(stage) {
     const el = document.getElementById('stage-banner');
     if (!el) return;
@@ -505,5 +543,6 @@ const TC_UI = (() => {
     drawWpmChart, bindToggleGroup, renderLevelBar,
     renderModeGrid, showModeOverlays, setModeBadge,
     updateHealthDisplay, updateComboDisplay, updateStageBanner,
+    showPauseOverlay, hidePauseOverlay, setPauseButtonState,
   };
 })();

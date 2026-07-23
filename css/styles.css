@@ -201,7 +201,10 @@ header {
   color: var(--text-muted);
   white-space: pre-wrap;
   word-break: break-word;
+  transition: filter var(--transition);
 }
+
+.typing-area.paused .text-display { filter: blur(6px); }
 
 .char { transition: color 0.05s; }
 .char.correct { color: var(--correct); }

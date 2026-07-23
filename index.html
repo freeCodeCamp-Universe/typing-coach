@@ -161,6 +161,15 @@
 
           <div class="test-controls">
             <span id="active-mode-badge" class="mode-badge hidden"></span>
+            <button class="icon-btn hidden" id="pause-btn" title="Pause (Esc)" aria-label="Pause">
+              <svg class="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+              </svg>
+              <svg class="resume-icon hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="6 3 20 12 6 21"></polygon>
+              </svg>
+            </button>
             <button class="icon-btn" id="restart-btn" title="Restart (F2)">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="1 4 1 10 7 10"></polyline>
@@ -193,6 +202,27 @@
           <span class="typing-hint" id="typing-hint">Start typing · <kbd>F2</kbd> restart · <kbd>Esc</kbd> exit</span>
         </div>
       </section>
+
+      <!-- ===== PAUSE OVERLAY ===== -->
+      <div id="pause-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Test paused">
+        <div class="modal confirm-modal">
+          <div class="modal-header">
+            <div class="modal-mode-title">
+              <div>
+                <div class="modal-mode-name">Paused</div>
+                <div class="modal-mode-desc">Your time, progress, and stats are on hold.</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="modal-actions">
+              <button class="btn btn-primary btn-large" id="pause-resume-btn">Resume <kbd>Esc</kbd></button>
+              <button class="btn btn-secondary" id="pause-restart-btn">Restart <kbd>F2</kbd></button>
+              <button class="btn btn-ghost" id="pause-exit-btn">Exit to Home</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ===== RESULTS ===== -->
       <section id="screen-results" class="screen hidden">
