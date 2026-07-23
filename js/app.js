@@ -98,6 +98,7 @@
       TC_UI.showModeOverlays(cfg.gameMode);
       if (state.health !== null) TC_UI.updateHealthDisplay(state.health, state.maxHealth);
       TC_UI.updateComboDisplay(0, 0);
+      TC_A11y.resetState(state, activeCfg);
       return;
     }
 
@@ -107,6 +108,7 @@
       TC_UI.renderTextDisplay(state.text);
       if (container) container.scrollTop = savedScrollTop;
       TC_UI.refreshDisplay(state);
+      TC_A11y.onTextExtended();
     }
 
     if (type === 'char' || type === 'backspace') {
@@ -116,6 +118,7 @@
       if (activeCfg.mode === 'words') {
         TC_UI.updateProgressBar(state.currentIndex / state.text.length);
       }
+      if (type === 'char') TC_A11y.onChar(state);
     }
 
     if (type === 'tick') {
@@ -128,24 +131,29 @@
         TC_UI.updateTimer(event.elapsed, 'words');
         TC_UI.updateProgressBar(progress);
       }
+      TC_A11y.onTick(event, activeCfg);
     }
 
     if (type === 'health') {
       TC_UI.updateHealthDisplay(event.health, event.maxHealth);
+      TC_A11y.onHealth(event.health, event.maxHealth);
     }
 
     if (type === 'combo') {
       TC_UI.updateComboDisplay(event.combo, event.maxCombo);
+      TC_A11y.onCombo(event.combo, event.maxCombo);
     }
 
     if (type === 'progressive-stage') {
       TC_UI.updateStageBanner(event.stage);
+      TC_A11y.onStage(event.stage);
     }
   }
 
   function handleTestFinish(result) {
     lastResult = result;
 
+    TC_A11y.onFinish(result);
     TC_Storage.addTest(result);
     TC_Storage.updateModeBest(result.gameMode, result);
     const xpGained = TC_Gamification.calcXP(result);
@@ -184,7 +192,10 @@
     if (screen === 'test') updateTypingHint();
     if (screen === 'progress') TC_UI.renderProgressScreen();
     if (screen === 'practice') TC_UI.renderPracticeScreen();
-    if (screen === 'test') document.getElementById('typing-area').focus();
+    if (screen === 'test') {
+      document.getElementById('typing-input').focus();
+      TC_A11y.announceReady(TC_Engine.getState(), TC_Engine.getConfig());
+    }
   }
 
   // -- Modal --
@@ -397,7 +408,7 @@
       navigateTo('test');
     });
     document.getElementById('typing-area').addEventListener('click', () => {
-      document.getElementById('typing-area').focus();
+      document.getElementById('typing-input').focus();
     });
   }
 
@@ -515,7 +526,11 @@
       }
       if (e.key === 'F2') {
         e.preventDefault();
-        if (currentScreen === 'test') { restartEngine(); return; }
+        if (currentScreen === 'test') {
+          restartEngine();
+          TC_A11y.announceReady(TC_Engine.getState(), TC_Engine.getConfig());
+          return;
+        }
         if (currentScreen === 'results') { restartEngine(); navigateTo('test'); return; }
         return;
       }

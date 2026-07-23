@@ -142,7 +142,7 @@ const TC_UI = (() => {
     if (!el) return;
     const max = maxHealth || 5;
     el.innerHTML = Array.from({ length: max }, (_, i) =>
-      `<span class="heart ${i < health ? 'alive' : 'dead'}">♥</span>`
+      `<span class="heart ${i < health ? 'alive' : 'dead'}" aria-hidden="true">♥</span>`
     ).join('');
   }
 
