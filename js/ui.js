@@ -322,7 +322,7 @@ const TC_UI = (() => {
     const container = canvas.parentElement;
     canvas.width = container.clientWidth || 600;
     canvas.height = 120;
-    drawLineChart(canvas, data, { color: '#7aa2f7', label: 'WPM' });
+    drawLineChart(canvas, data, { color: '#99c9ff', label: 'WPM' });
   }
 
   function drawProgressChart(tests) {
@@ -340,12 +340,12 @@ const TC_UI = (() => {
       canvas.style.height = logH + 'px';
       const ctx = canvas.getContext('2d');
       ctx.scale(dpr, dpr);
-      const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#24283b';
-      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#9aa5ce';
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#1b1b32';
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#dfdfe2';
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, logW, logH);
       ctx.fillStyle = textColor;
-      ctx.font = '14px Inter, sans-serif';
+      ctx.font = '14px Lato, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('Complete at least 2 tests to see your WPM history here', logW / 2, logH / 2);
@@ -353,10 +353,10 @@ const TC_UI = (() => {
     }
     canvas.width = logW;
     canvas.height = logH;
-    drawLineChart(canvas, data, { color: '#9ece6a', label: 'WPM History' });
+    drawLineChart(canvas, data, { color: '#acd157', label: 'WPM History' });
   }
 
-  function drawLineChart(canvas, data, { color = '#7aa2f7' } = {}) {
+  function drawLineChart(canvas, data, { color = '#99c9ff' } = {}) {
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
     const pad = { top: 15, right: 20, bottom: 30, left: 45 };
@@ -364,7 +364,7 @@ const TC_UI = (() => {
     const cH = H - pad.top - pad.bottom;
 
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#24283b';
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#1b1b32';
     ctx.fillRect(0, 0, W, H);
 
     if (!data.length) return;
@@ -373,8 +373,8 @@ const TC_UI = (() => {
     const minVal = 0;
     const range = maxVal - minVal || 1;
 
-    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#3b4261';
-    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#565f89';
+    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#3b3b4f';
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#dfdfe2';
 
     // Grid
     ctx.strokeStyle = gridColor;
@@ -384,7 +384,7 @@ const TC_UI = (() => {
       ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
       const val = Math.round(maxVal - (range * i / 4));
       ctx.fillStyle = textColor;
-      ctx.font = '11px Inter, sans-serif';
+      ctx.font = '11px Lato, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText(val, pad.left - 6, y + 4);
     }
