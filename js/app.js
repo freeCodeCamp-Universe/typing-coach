@@ -520,6 +520,7 @@
     TC_UI.bindToggleGroup('practice-focus-toggle', val => {
       practiceConfig = val;
       document.getElementById('custom-text-area').classList.toggle('hidden', val !== 'custom');
+      document.getElementById('weak-keys-display').classList.toggle('hidden', val !== 'weak-keys');
     });
     document.getElementById('start-practice-btn').addEventListener('click', startPractice);
     document.getElementById('start-custom-btn').addEventListener('click', () => {
