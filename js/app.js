@@ -520,14 +520,21 @@
     TC_UI.bindToggleGroup('practice-focus-toggle', val => {
       practiceConfig = val;
       document.getElementById('custom-text-area').classList.toggle('hidden', val !== 'custom');
+      document.getElementById('weak-keys-display').classList.toggle('hidden', val !== 'weak-keys');
+      hideCustomTextError();
     });
     document.getElementById('start-practice-btn').addEventListener('click', startPractice);
-    document.getElementById('start-custom-btn').addEventListener('click', () => {
-      const text = document.getElementById('custom-text-input').value.trim();
-      if (!text) return;
-      setupEngineWithText(text);
-      navigateTo('test');
-    });
+    document.getElementById('custom-text-input').addEventListener('input', hideCustomTextError);
+  }
+
+  function hideCustomTextError() {
+    document.getElementById('custom-text-error').classList.add('hidden');
+  }
+
+  function showCustomTextError() {
+    const message = 'Enter some text before starting practice.';
+    document.getElementById('custom-text-error').classList.remove('hidden');
+    TC_A11y.announce(message, true);
   }
 
   function startPractice() {
@@ -540,7 +547,11 @@
     } else if (focus === 'symbols') {
       text = TC_DATA.symbolText;
     } else {
-      text = document.getElementById('custom-text-input').value.trim() || TC_TextGen.generate(cfg);
+      text = document.getElementById('custom-text-input').value.trim();
+      if (!text) {
+        showCustomTextError();
+        return;
+      }
     }
     setupEngineWithText(text);
     navigateTo('test');
