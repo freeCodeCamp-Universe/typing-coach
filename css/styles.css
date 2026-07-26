@@ -440,6 +440,7 @@ header {
 }
 #custom-text-input:focus { border-color: var(--focus); }
 #custom-text-input::placeholder { color: var(--text-muted); }
+.field-error { color: var(--incorrect); font-size: 0.8125rem; margin: 0; }
 
 .dim-text { color: var(--text-dim); font-size: 0.875rem; padding: 0.5rem 0; }
 
