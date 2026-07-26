@@ -669,6 +669,8 @@ header {
 
   .config-row { flex-direction: column; gap: 0.875rem; }
   .config-panel { padding: 0.875rem 0.875rem; gap: 0.875rem; }
+  .modal-body .config-row { justify-content: flex-start; }
+  .modal-body .config-group { align-items: flex-start; }
 
   .results-metrics { gap: 0.5rem; }
   .result-metric.primary .result-value { font-size: 2.625rem; }
